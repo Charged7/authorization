@@ -1,0 +1,40 @@
+<!-- templates/account/logout.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Logout{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/logout.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="logout-section">
+    <div class="container">
+        <div class="logout-card mx-auto">
+            <div class="logout-icon">
+                <i class="bi bi-box-arrow-right"></i>
+            </div>
+
+            <h2>Logout</h2>
+            <p>Are you sure you want to log out of your account?</p>
+
+            <form method="post" action="{% url 'account_logout' %}">
+                {% csrf_token %}
+                <div class="logout-buttons">
+                    <button type="submit" class="logout-btn logout-btn-danger">
+                        <i class="bi bi-box-arrow-right"></i> Yes, log out
+                    </button>
+                    <a href="{% url 'home' %}" class="logout-btn logout-btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancel
+                    </a>
+                </div>
+            </form>
+
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

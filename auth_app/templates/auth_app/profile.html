@@ -1,0 +1,348 @@
+<!-- auth_app/templates/auth_app/profile.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container profile-container py-5">
+    <div class="row">
+        <!-- Left column: Avatar and main info -->
+        <div class="col-md-4">
+            <div class="card profile-sidebar">
+                <div class="card-body text-center">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="Avatar" class="profile-avatar mb-3">
+                    {% else %}
+                        <div class="profile-avatar-placeholder mb-3">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
+
+                    <h4 class="mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted mb-3">{{ user.email }}</p>
+
+                    {% if user.is_staff %}
+                        <span class="badge bg-danger mb-3">Administrator</span>
+                    {% else %}
+                        <span class="badge bg-success mb-3">User</span>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 profile-actions">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="bi bi-pencil"></i> Edit Profile
+                        </button>
+
+                        {% if user.has_usable_password %}
+                            <a href="{% url 'account_change_password' %}" class="btn btn-outline-warning">
+                                <i class="bi bi-key"></i> Change Password
+                            </a>
+                        {% else %}
+                            <a href="{% url 'account_set_password' %}" class="btn btn-outline-success">
+                                <i class="bi bi-key-fill"></i> Set Password
+                            </a>
+                        {% endif %}
+
+                        <a href="{% url 'account_email' %}" class="btn btn-outline-info">
+                            <i class="bi bi-envelope"></i> Manage Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Statistics</h6>
+                    {% include 'auth_app/components/user_stats.html' %}
+                </div>
+            </div>
+
+            {% if not user.has_usable_password %}
+                <div class="alert alert-warning mt-3" role="alert">
+                    <strong><i class="bi bi-exclamation-triangle me-1"></i> Attention!</strong><br>
+                    <small>You logged in via a social network. We recommend setting a password for backup access.</small>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right column: Detailed info -->
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-semibold">
+                    User Profile
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Username:</span>
+                            <span>{{ user.username }}</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Email:</span>
+                            <span>
+                                {{ user.email }}
+                                {% if user.emailaddress_set.first.verified %}
+                                    <span class="badge bg-success ms-2">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark ms-2">Not verified</span>
+                                {% endif %}
+                            </span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">First Name:</span>
+                            <span>{{ user.first_name|default:"Not provided" }}</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Last Name:</span>
+                            <span>{{ user.last_name|default:"Not provided" }}</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Phone:</span>
+                            <span>{{ user.phone|default:"Not provided" }}</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Date of Birth:</span>
+                            <span>
+                                {% if user.date_of_birth %}
+                                    {{ user.date_of_birth|date:"d.m.Y" }}
+                                {% else %}
+                                    Not provided
+                                {% endif %}
+                            </span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">About Me:</span>
+                            <span>{{ user.bio|default:"Not provided" }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Account settings -->
+            <div class="card mt-3 account-settings-card">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear-fill me-2"></i>
+                        Account Settings
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row account-settings g-3">
+
+                        <!-- Account Status -->
+                        <div class="col-md-6">
+                            <div class="setting-item setting-item-{{ user.is_active|yesno:'success,danger' }}">
+                                <div class="setting-avatar">
+                                    <div class="avatar-placeholder rounded-circle">
+                                        {{ user.username|slice:":1"|upper }}
+                                    </div>
+                                </div>
+
+                                <div class="setting-content">
+                                    <div class="setting-info">
+                                        <h6>Account Status</h6>
+                                        <small class="text-muted">Account is {{ user.is_active|yesno:'activated,disabled' }}</small>
+                                    </div>
+                                    <div class="setting-badge">
+                                        <span class="status-indicator status-{{ user.is_active|yesno:'active,inactive' }}"></span>
+                                        <span class="badge badge-{{ user.is_active|yesno:'success,danger' }}">
+                                            {{ user.is_active|yesno:"Active,Inactive" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin Rights -->
+                        <div class="col-md-6">
+                            <div class="setting-item setting-item-{{ user.is_staff|yesno:'danger,secondary' }}">
+                                <div class="setting-avatar">
+                                    <div class="avatar-placeholder rounded-circle bg-danger">
+                                        <i class="bi bi-shield-fill text-white"></i>
+                                    </div>
+                                </div>
+
+                                <div class="setting-content">
+                                    <div class="setting-info">
+                                        <h6>Administrator Rights</h6>
+                                        <small class="text-muted">Access to admin panel</small>
+                                    </div>
+                                    <div class="setting-badge">
+                                        <span class="status-indicator status-{{ user.is_staff|yesno:'admin,user' }}"></span>
+                                        <span class="badge badge-{{ user.is_staff|yesno:'danger,secondary' }}">
+                                            {{ user.is_staff|yesno:"Admin,User" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password Security -->
+                        <div class="col-md-6">
+                            <div class="setting-item setting-item-{{ user.has_usable_password|yesno:'success,warning' }}">
+                                <div class="setting-avatar">
+                                    <div class="avatar-placeholder rounded-circle bg-{{ user.has_usable_password|yesno:'success,warning' }}">
+                                        <i class="bi bi-lock-fill text-white"></i>
+                                    </div>
+                                </div>
+
+                                <div class="setting-content">
+                                    <div class="setting-info">
+                                        <h6>Password Security</h6>
+                                        <small class="text-muted">{{ user.has_usable_password|yesno:'Password is set,Password required' }}</small>
+                                    </div>
+                                    <div class="setting-badge">
+                                        <span class="status-indicator status-{{ user.has_usable_password|yesno:'secure,warning' }}"></span>
+                                        <span class="badge badge-{{ user.has_usable_password|yesno:'success,warning' }}">
+                                            {{ user.has_usable_password|yesno:"Protected,Not set" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Verification -->
+                        <div class="col-md-6">
+                            <div class="setting-item setting-item-{% if user.emailaddress_set.first.verified %}success{% else %}warning{% endif %}">
+                                <div class="setting-avatar">
+                                    <div class="avatar-placeholder rounded-circle bg-{% if user.emailaddress_set.first.verified %}success{% else %}warning{% endif %}">
+                                        <i class="bi bi-envelope-fill text-white"></i>
+                                    </div>
+                                </div>
+
+                                <div class="setting-content">
+                                    <div class="setting-info">
+                                        <h6>Email Verification</h6>
+                                        <small class="text-muted">{% if user.emailaddress_set.first.verified %}Email verified{% else %}Verification required{% endif %}</small>
+                                    </div>
+                                    <div class="setting-badge">
+                                        {% if user.emailaddress_set.first.verified %}
+                                            <span class="status-indicator status-verified"></span>
+                                            <span class="badge badge-success">Confirmed</span>
+                                        {% else %}
+                                            <span class="status-indicator status-pending"></span>
+                                            <span class="badge badge-warning">Not confirmed</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card mt-3 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Danger Zone</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">After deleting your account, all your data will be permanently removed.</p>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="bi bi-trash"></i> Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ user.date_of_birth|date:'Y-m-d' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">About Me</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="4">{{ user.bio }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="avatar" class="form-label">Avatar</label>
+                        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                        {% if user.avatar %}
+                            <small class="text-muted">Current avatar: {{ user.avatar.name }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p><strong>Are you sure you want to delete your account?</strong></p>
+                <p class="text-muted mb-0">This action cannot be undone. All your data will be permanently deleted.</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <form method="post" action="{% url 'auth_app:delete_account' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, delete my account</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

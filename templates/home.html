@@ -1,0 +1,155 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Main - Welcome{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/home.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <h1>Welcome to our app! 🚀</h1>
+        <p>It's a modern platform for managing your profiles and data</p>
+
+        {% if user.is_authenticated %}
+            <div class="hero-buttons">
+                <a href="{% url 'auth_app:profile' %}" class="hero-btn hero-btn-outline">
+                    <i class="bi bi-person-circle"></i> My profile
+                </a>
+            </div>
+        {% else %}
+            <div class="hero-buttons">
+                <a href="{% url 'account_signup' %}" class="hero-btn hero-btn-primary">
+                    <i class="bi bi-person-plus"></i> Registration
+                </a>
+                <a href="{% url 'account_login' %}" class="hero-btn hero-btn-outline">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign in
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our capabilities</h2>
+            <p>Everything you need in one place</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Safety</h4>
+                    <p>Reliable protection of your data using modern encryption technologies and multifactor authentication</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h4>Rapidity</h4>
+                    <p>Lightning-fast application performance thanks to optimized code and modern architecture</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-palette"></i>
+                    </div>
+                    <h4>Design</h4>
+                    <p>A modern and intuitive interface that adapts to any device</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h4>Social media</h4>
+                    <p>Login via Google, GitHub and other popular services for maximum convenience</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-phone"></i>
+                    </div>
+                    <h4>Mobility</h4>
+                    <p>Fully mobile-friendly. Work anywhere, anytime</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-headset"></i>
+                    </div>
+                    <h4>Support 24/7</h4>
+                    <p>Our team is always ready to help you solve any issues at any time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Active users</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Technical support</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number">99%</span>
+                    <span class="stat-label">Good reviews</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Functions</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+{% if not user.is_authenticated %}
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to start?</h2>
+        <p>Join thousands of users today</p>
+        <div class="hero-buttons">
+            <a href="{% url 'account_signup' %}" class="hero-btn hero-btn-primary">
+                <i class="bi bi-rocket-takeoff"></i> Start for free
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

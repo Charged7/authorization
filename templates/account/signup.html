@@ -1,0 +1,81 @@
+<!-- templates/account/signup.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registration{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/signup.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="signup-section">
+    <div class="container">
+        <div class="signup-card mx-auto">
+            <div class="signup-header">
+                <div class="signup-icon">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <h2>Registration</h2>
+                <p>Create a new account</p>
+            </div>
+
+            <!-- Алерт с ошибками -->
+            {% include 'components/forms/alert.html' with show=form.errors type='danger' title='Error!' message='Please check that the entered data is correct' %}
+
+            <!-- Форма регистрации -->
+            <form method="post" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+
+                <!-- Email поле -->
+                {% include 'components/forms/email_field.html' with field_id='id_email' name='email' required=True error=form.email.errors.0 value=form.email.value %}
+
+                <!-- Username поле -->
+                <div class="form-group mb-3">
+                    <label for="id_username" class="form-label">
+                        <i class="bi bi-person"></i> Username
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                        id="id_username"
+                        name="username"
+                        placeholder="Enter username"
+                        value="{{ form.username.value|default:'' }}"
+                        required
+                    >
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password 1 поле -->
+                {% include 'components/forms/password_field.html' with field_id='id_password1' name='password1' label='Password' required=True help_text='Minimum 8 symbols, not only numbers' error=form.password1.errors.0 %}
+
+                <!-- Password 2 поле -->
+                {% include 'components/forms/password_field.html' with field_id='id_password2' name='password2' label='Confirm password' icon='lock-fill' required=True error=form.password2.errors.0 %}
+
+                <!-- Когда пользователь пытается зайти на страницу, которая требует авторизацию
+                Django автоматически отправляет его на страницу логина -->
+                {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+
+                <!-- Кнопка регистрации -->
+                {% include 'components/forms/submit_button.html' with style='signup' icon='person-check' text='Register' %}
+            </form>
+
+            <!-- Разделитель -->
+            {% include 'components/forms/divider.html' with text='Already have account?' %}
+
+            <div class="text-links">
+                <a href="{% url 'account_login' %}" style="font-size: 1.1rem;">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

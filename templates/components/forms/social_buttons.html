@@ -1,0 +1,14 @@
+<!-- templates/components/forms/social_buttons.html -->
+{% load socialaccount %}
+
+<div class="social-login">
+    <a href="{% provider_login_url 'google' %}" class="btn-social btn-google">
+        <i class="bi bi-google"></i>
+        {{ google_text|default:"Войти через Google" }}
+    </a>
+
+{#    <a href="{% provider_login_url 'github' %}" class="btn-social btn-github">#}
+{#        <i class="bi bi-github"></i>#}
+{#        {{ github_text|default:"Войти через GitHub" }}#}
+{#    </a>#}
+</div>

@@ -1,0 +1,76 @@
+<!-- templates/account/login.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/login.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="login-section">
+    <div class="container">
+        <div class="login-card mx-auto">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="bi bi-person-lock"></i>
+                </div>
+                <h2>Login</h2>
+                <p>Login to continue</p>
+            </div>
+
+            <!-- Алерт с ошибками -->
+{#            {% include 'components/forms/alert.html' with show=form.errors type='danger' title='Error!' message='Please check that the entered data is correct' %}#}
+
+            {% if form.non_field_errors %}
+                {% include 'components/forms/alert.html' with show=True type='danger' message=form.non_field_errors %}
+            {% endif %}
+
+            <!-- Форма входа -->
+            <form method="post" action="{% url 'account_login' %}">
+                {% csrf_token %}
+
+                <!-- Email поле -->
+                {% include 'components/forms/email_field.html' with field_id='id_login' name='login' required=True autocomplete='email' value=form.login.value %}
+
+                <!-- Password поле -->
+                {% include 'components/forms/password_field.html' with field_id='id_password' name='password' label='Password' required=True autocomplete='current-password' %}
+
+                <!-- Remember me чекбокс -->
+                {% include 'components/forms/checkbox_field.html' with field_id='id_remember' name='remember' label='Remember me' checked=False %}
+
+                <!-- Когда пользователь пытается зайти на страницу, которая требует авторизацию
+                Django автоматически отправляет его на страницу логина -->
+                {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+
+                <!-- Кнопка входа -->
+                {% include 'components/forms/submit_button.html' with style='login' icon='box-arrow-in-right' text='Login' %}
+            </form>
+
+            <div class="text-links">
+                <a href="{% url 'account_reset_password' %}">
+                    <i class="bi bi-key"></i> Forgot password?
+                </a>
+            </div>
+
+            <!-- Разделитель -->
+            {% include 'components/forms/divider.html' with text='или войти через' %}
+
+            <!-- Социальные логины -->
+            {% include 'components/forms/social_buttons.html' %}
+
+            <!-- Разделитель -->
+            {% include 'components/forms/divider.html' with text='Нет аккаунта?' %}
+
+            <div class="text-links">
+                <a href="{% url 'account_signup' %}" style="font-size: 1.1rem;">
+                    <i class="bi bi-person-plus"></i> Register
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

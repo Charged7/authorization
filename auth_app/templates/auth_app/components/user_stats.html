@@ -1,0 +1,32 @@
+<!-- auth_app/templates/auth_app/components/user_stats.html -->
+
+<div class="bg-light rounded p-3 border">
+    <div class="mb-3">
+        <div class="text-muted small">Registration</div>
+        <div class="fw-semibold">
+            {{ user.date_joined|date:"d.m.Y H:i" }}
+        </div>
+    </div>
+
+    <hr class="my-2">
+
+    <div class="mb-3">
+        <div class="text-muted small">Last login</div>
+        <div class="fw-semibold">
+            {% if user.last_login %}
+                {{ user.last_login|date:"d.m.Y H:i" }}
+            {% else %}
+                Первый вход
+            {% endif %}
+        </div>
+    </div>
+
+    <hr class="my-2">
+
+    <div>
+        <div class="text-muted small">With us</div>
+        <div class="fw-semibold">
+            {{ user.date_joined|timesince }}
+        </div>
+    </div>
+</div>

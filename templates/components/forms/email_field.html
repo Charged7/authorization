@@ -1,0 +1,23 @@
+<!-- templates/components/forms/email_field.html -->
+<div class="form-group">
+    <label for="{{ field_id }}" class="form-label">
+        <i class="bi bi-envelope"></i> {{ label|default:"Email" }}
+    </label>
+    <input type="email"
+           name="{{ name|default:'email' }}"
+           class="form-control {% if error %}is-invalid{% endif %}"
+           id="{{ field_id }}"
+           placeholder="{{ placeholder|default:'your-email@example.com' }}"
+           {% if required %}required{% endif %}
+           {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+           value="{{ value|default:'' }}">
+
+    {% if error %}
+        <div class="invalid-feedback d-block">
+            {{ error }}
+        </div>
+    {% endif %}
+    {% if help_text %}
+        <small class="text-muted d-block mt-1">{{ help_text }}</small>
+    {% endif %}
+</div>

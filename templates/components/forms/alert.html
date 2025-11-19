@@ -1,0 +1,7 @@
+<!-- templates/components/forms/alert.html -->
+{% if show %}
+    <div class="alert alert-{{ type|default:'danger' }}" role="alert">
+        {% if title %}<strong>{{ title }}</strong>{% endif %}
+        {{ message }}
+    </div>
+{% endif %}
